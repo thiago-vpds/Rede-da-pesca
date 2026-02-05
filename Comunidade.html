@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunidade - Rede da Pesca</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#eef2f5;
+}
+
+/* NAVBAR */
+.navbar{
+    background: linear-gradient(135deg, #0b5ed7, #1e90ff);
+    position: relative;
+    padding:15px 30px;
+    overflow:hidden;
+}
+
+.navbar::after{
+    content:"";
+    position:absolute;
+    bottom:-20px;
+    left:0;
+    width:100%;
+    height:60px;
+    background: repeating-linear-gradient(
+        -45deg,
+        rgba(255,255,255,0.25),
+        rgba(255,255,255,0.25) 10px,
+        transparent 10px,
+        transparent 20px
+    );
+    opacity:0.4;
+    pointer-events:none;
+}
+
+.navbar-content{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+.logo{
+    color:white;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.nav-links{
+    display:flex;
+    gap:18px;
+}
+
+.nav-links a{
+    color:white;
+    text-decoration:none;
+    font-weight:500;
+    padding:8px 14px;
+    border-radius:20px;
+    transition:.2s;
+}
+
+.nav-links a:hover{
+    background:rgba(255,255,255,0.25);
+}
+
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
+}
+
+/* FEED */
+.feed, .panel{
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.1);
+}
+
+.post{
+    border-bottom:1px solid #eee;
+    padding:12px 0;
+}
+
+.post:last-child{
+    border:none;
+}
+
+.post strong{
+    display:block;
+}
+
+.actions{
+    margin-top:6px;
+    color:#1e90ff;
+    font-size:14px;
+    cursor:pointer;
+}
+
+/* PAINEL */
+.price-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
+
+.price-table th, .price-table td{
+    padding:8px;
+    text-align:left;
+}
+
+.price-table tr:nth-child(even){
+    background:#f3f6fa;
+}
+
+.up{color:#16a34a;}
+.down{color:#dc2626;}
+
+/* MURAL */
+.board-item{
+    background:#f1f5f9;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+/* ENQUETE */
+.poll button{
+    display:block;
+    width:100%;
+    margin-top:6px;
+    padding:8px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    background:#1e90ff;
+    color:white;
+}
+
+.poll button:hover{
+    opacity:.85;
+}
+
+h2{
+    margin-top:0;
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="navbar-content">
+        <strong>🌊 Rede da Pesca</strong>
+        <div class="nav-links">
+            <a href="Perfil_pescador.html">Perfil</a>
+            <a href="Mercado_de_demandas.html">Demandas</a>
+            <a href="Mercado_de_apoio.html">Apoio</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+<!-- FEED -->
+<div class="feed">
+    <h2>📰 Comunidade</h2>
+    <div id="feed"></div>
+</div>
+
+<!-- PAINEL LATERAL -->
+<div class="panel">
+
+    <h2>📊 Preços Médios</h2>
+    <table class="price-table" id="priceTable"></table>
+
+    <h2>📢 Demandas Rápidas</h2>
+    <div id="board"></div>
+
+    <h2>🗳 Enquete</h2>
+    <div class="poll" id="poll"></div>
+
+</div>
+
+</div>
+
+<script>
+const posts = [
+ {name:"João Costa", city:"Antonina", text:"Tenho 200kg de tainha disponíveis hoje!"},
+ {name:"Mercado Central", city:"Curitiba", text:"Buscamos fornecedor fixo de camarão rosa."},
+ {name:"Maria Pescadora", city:"Paranaguá", text:"Preço da tainha subiu essa semana!"}
+];
+
+const prices = [
+ {product:"Tainha", price:28.40, trend:"up"},
+ {product:"Camarão", price:64.00, trend:"down"},
+ {product:"Robalo", price:45.50, trend:"up"}
+];
+
+const demands = [
+ "Procuro 150kg de camarão – Paranaguá – pagamento imediato",
+ "Compra semanal de peixe inteiro – Antonina",
+ "Restaurante precisa de robalo hoje"
+];
+
+const pollOptions = ["Tainha", "Camarão", "Robalo"];
+
+/* FEED */
+const feedBox = document.getElementById("feed");
+posts.forEach(p=>{
+    feedBox.innerHTML += `
+    <div class="post">
+        <strong>${p.name} — ${p.city}</strong>
+        ${p.text}
+        <div class="actions">❤️ Curtir | 💬 Comentar</div>
+    </div>`;
+});
+
+/* PREÇOS */
+const priceTable = document.getElementById("priceTable");
+priceTable.innerHTML = `
+<tr><th>Produto</th><th>Preço</th><th></th></tr>
+`;
+prices.forEach(p=>{
+    priceTable.innerHTML += `
+    <tr>
+        <td>${p.product}</td>
+        <td>R$ ${p.price.toLocaleString("pt-BR",{minimumFractionDigits:2})}</td>
+        <td class="${p.trend}">${p.trend==="up"?"🔼":"🔽"}</td>
+    </tr>`;
+});
+
+/* MURAL */
+const board = document.getElementById("board");
+demands.forEach(d=>{
+    board.innerHTML += `<div class="board-item">📌 ${d}</div>`;
+});
+
+/* ENQUETE */
+const poll = document.getElementById("poll");
+pollOptions.forEach(o=>{
+    poll.innerHTML += `<button>${o}</button>`;
+});
+</script>
+
+</body>
+</html>
