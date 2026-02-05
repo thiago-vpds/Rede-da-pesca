@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mercado de Demandas</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#eef2f5;
+}
+
+/* NAVBAR */
+.navbar{
+    background: linear-gradient(135deg, #0b5ed7, #1e90ff);
+    padding:15px 30px;
+    color:white;
+    position:relative;
+    overflow:hidden;
+}
+
+.navbar::after{
+    content:"";
+    position:absolute;
+    bottom:-20px;
+    left:0;
+    width:100%;
+    height:60px;
+    background: repeating-linear-gradient(
+        -45deg,
+        rgba(255,255,255,.25),
+        rgba(255,255,255,.25) 10px,
+        transparent 10px,
+        transparent 20px
+    );
+    opacity:.4;
+}
+
+.navbar-content{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.nav-links{
+    display:flex;
+    gap:18px;
+}
+
+.nav-links a{
+    color:white;
+    text-decoration:none;
+    padding:8px 14px;
+    border-radius:20px;
+    transition:.2s;
+}
+
+.nav-links a:hover{
+    background:rgba(255,255,255,.25);
+}
+
+/* LAYOUT */
+.main{
+    display:flex;
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+    gap:20px;
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:260px;
+    background:white;
+    border-radius:14px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.1);
+    height:fit-content;
+}
+
+.sidebar h3{
+    margin-bottom:15px;
+}
+
+.filter{
+    padding:10px;
+    margin-bottom:10px;
+    border-radius:10px;
+    cursor:pointer;
+    background:#f1f5f9;
+    transition:.2s;
+}
+
+.filter:hover, .filter.active{
+    background:#1e90ff;
+    color:white;
+}
+
+/* GRID */
+.grid{
+    flex:1;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
+}
+
+/* CARDS */
+.card{
+    background:white;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 4px 12px rgba(0,0,0,.1);
+    transition:.2s;
+}
+
+.card:hover{
+    transform:translateY(-6px);
+}
+
+.card img{
+    width:100%;
+    height:160px;
+    object-fit:cover;
+}
+
+.card-content{
+    padding:14px;
+}
+
+.price{
+    color:#16a34a;
+    font-weight:bold;
+}
+
+.city{
+    color:#555;
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="navbar-content">
+        <strong>🌊 Rede da Pesca</strong>
+        <div class="nav-links">
+            <a href="Index.html">Meu Perfil</a>
+            <a href="Mecado_de_apoio.html">Mercado de Apoio</a>
+            <a href="#">Comunidade</a>
+        </div>
+    </div>
+</nav>
+
+<div class="main">
+
+    <div class="sidebar">
+        <h3>🎯 Tipos de Demanda</h3>
+        <div class="filter active" data-type="all">Todas</div>
+        <div class="filter" data-type="filetagem">Indústria de Filetagem</div>
+        <div class="filter" data-type="frio">Cadeia do Frio</div>
+        <div class="filter" data-type="restaurante">Restaurantes</div>
+        <div class="filter" data-type="mercado">Mercados</div>
+        <div class="filter" data-type="institucional">Mercados Institucionais</div>
+    </div>
+
+    <div class="grid" id="demandGrid"></div>
+
+</div>
+
+<script>
+const demands = [
+{
+    type:"restaurante",
+    name:"Restaurante Mar Azul",
+    product:"Robalo Fresco",
+    qty:"80 kg",
+    price:42,
+    city:"Paranaguá",
+    image:"Robalo.jpg"
+},
+{
+    type:"mercado",
+    name:"Mercado Central",
+    product:"Camarão Rosa",
+    qty:"120 kg",
+    price:60,
+    city:"Curitiba",
+    image:"Camarão.jpg"
+},
+{
+    type:"filetagem",
+    name:"Indústria PeixeBom",
+    product:"Tainha para Filetagem",
+    qty:"500 kg",
+    price:25,
+    city:"Antonina",
+    image:"Tainha.jpg"
+},
+{
+    type:"frio",
+    name:"FrioSul Logística",
+    product:"Siri Congelado",
+    qty:"300 kg",
+    price:18,
+    city:"Joinville",
+    image:"Siri.jpg"
+},
+{
+    type:"institucional",
+    name:"Prefeitura Municipal",
+    product:"Peixe Inteiro",
+    qty:"1000 kg",
+    price:22,
+    city:"Antonina",
+    image:"Antonina.PNG"
+}
+];
+
+const grid = document.getElementById("demandGrid");
+const filters = document.querySelectorAll(".filter");
+
+function render(list){
+    grid.innerHTML = "";
+    list.forEach(d=>{
+        grid.innerHTML += `
+        <div class="card">
+            <img src="${d.image}">
+            <div class="card-content">
+                <h3>${d.product}</h3>
+                <p><strong>${d.name}</strong></p>
+                <p>Quantidade: ${d.qty}</p>
+                <p class="price"> ${d.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })} / kg </p>
+                <p class="city">📍 ${d.city}</p>
+            </div>
+        </div>
+        `;
+    });
+}
+
+filters.forEach(f=>{
+    f.addEventListener("click", ()=>{
+        filters.forEach(x=>x.classList.remove("active"));
+        f.classList.add("active");
+
+        const type = f.dataset.type;
+        if(type === "all") render(demands);
+        else render(demands.filter(d=>d.type === type));
+    });
+});
+
+render(demands);
+</script>
+
+</body>
+</html>
